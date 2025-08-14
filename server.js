@@ -28,7 +28,7 @@ const buildPrompt = () =>
   `Lighting: ${pick(LIGHT)}. Camera: ${pick(CAMERA)}. Action: ${pick(ACTION)}. ` +
   `High detail, pleasing composition.\nNegative prompt: ${NEGATIVE}`;
 
-app.get("/", (_req, res) => res.send("Kitten Bass Action OK"));
+app.get("/", (_req, res)=> res.send("Kittens-Boots-Bass Action OK"));
 
 app.post("/kitten-image", async (_req, res) => {
   try {
@@ -36,10 +36,11 @@ app.post("/kitten-image", async (_req, res) => {
 
     const resp = await openai.images.generate({
       // If your account requires the model, uncomment and set:
-      // model: "gpt-image-1",
+      model: "gpt-image-1",
       prompt,
       n: 1,
       size: "1024x1024"
+      response_format: "b64_json"
     });
 
     const image_b64 = resp.data?.[0]?.b64_json;
