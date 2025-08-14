@@ -30,20 +30,43 @@ const buildPrompt = () =>
 
 app.get("/", (_req, res)=> res.send("Kittens-Boots-Bass Action OK"));
 
+async function generateImageBase64(prompt) {
+  const models = ["gpt-image-1", "dall-e-3"];
+  for (const model of models) {
+    try {
+      const resp = await openai.images.generate({
+        model,
+        prompt,
+        n: 1,
+        size: "1024x1024",
+        response_format: "b64_json"
+      });
+
+      // Prefer base64 if present
+      let b64 = resp?.data?.[0]?.b64_json;
+
+      // If API returned a URL instead, fetch it and convert to base64
+      if (!b64 && resp?.data?.[0]?.url) {
+        const imgRes = await fetch(resp.data[0].url);
+        const buf = Buffer.from(await imgRes.arrayBuffer());
+        b64 = buf.toString("base64");
+      }
+
+      if (b64) return b64;
+
+      console.error("No image payload from", model, JSON.stringify(resp));
+    } catch (err) {
+      console.error("Image gen failed on", model, err?.response?.data || err?.message || err);
+      // try next model
+    }
+  }
+  return null;
+}
+
 app.post("/kitten-image", async (_req, res) => {
   try {
     const prompt = buildPrompt();
-
-    const resp = await openai.images.generate({
-      // If your account requires the model, uncomment and set:
-      model: "gpt-image-1",
-      prompt,
-      n: 1,
-      size: "1024x1024"
-      response_format: "b64_json"
-    });
-
-    const image_b64 = resp.data?.[0]?.b64_json;
+    const image_b64 = await generateImageBase64(prompt);
     if (!image_b64) return res.status(502).json({ error: "no_image_returned" });
     res.json({ image_b64 });
   } catch (err) {
@@ -51,6 +74,7 @@ app.post("/kitten-image", async (_req, res) => {
     res.status(500).json({ error: "server_error" });
   }
 });
+
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log("Server running on", PORT));
