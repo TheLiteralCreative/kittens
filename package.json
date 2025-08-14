@@ -1,0 +1,15 @@
+{
+  "name": "kittens-boots-bass",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": { "node": ">=18.0.0" },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "openai": "^4.55.0"
+  }
+}
