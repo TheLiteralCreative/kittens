@@ -3,9 +3,10 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { OpenAI } from "openai";
 import { randomUUID } from "crypto";
-app.set("trust proxy", true); // so req.protocol/host work behind Render
 
 const app = express();
+app.set("trust proxy", true); // so req.protocol/host work behind Render
+
 app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
 
