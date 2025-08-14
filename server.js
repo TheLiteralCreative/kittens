@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { OpenAI } from "openai";
+import { randomUUID } from "crypto";
+app.set("trust proxy", true); // so req.protocol/host work behind Render
 
 const app = express();
 app.use(cors());
@@ -30,7 +32,7 @@ const buildPrompt = () =>
 
 app.get("/", (_req, res)=> res.send("Kittens-Boots-Bass Action OK"));
 
-async function generateImageURL(prompt) {
+async function generateImageB64(prompt) {
   const models = ["gpt-image-1", "dall-e-3"];
   for (const model of models) {
     try {
@@ -38,12 +40,12 @@ async function generateImageURL(prompt) {
         model,
         prompt,
         n: 1,
-        size: "512x512",           // keep small
-        response_format: "url"     // << return a hosted URL
+        size: "512x512",
+        response_format: "b64_json"
       });
-      const url = resp?.data?.[0]?.url;
-      if (url) return url;
-      console.error("No URL from", model, JSON.stringify(resp));
+      const b64 = resp?.data?.[0]?.b64_json;
+      if (b64) return b64;
+      console.error("No b64 from", model, JSON.stringify(resp));
     } catch (err) {
       console.error("Image gen failed on", model, err?.response?.data || err?.message || err);
     }
@@ -51,18 +53,41 @@ async function generateImageURL(prompt) {
   return null;
 }
 
-app.post("/kitten-image", async (_req, res) => {
+
+// Ephemeral in-memory image store (auto-cleans after 1 hour)
+const IMG_TTL_MS = 60 * 60 * 1000;
+const imgStore = new Map(); // id -> Buffer
+function putImage(buf) {
+  const id = randomUUID();
+  imgStore.set(id, buf);
+  setTimeout(() => imgStore.delete(id), IMG_TTL_MS);
+  return id;
+}
+app.get("/img/:id", (req, res) => {
+  const buf = imgStore.get(req.params.id);
+  if (!buf) return res.status(404).send("Not found");
+  res.set("Content-Type", "image/png");
+  res.set("Cache-Control", "public, max-age=86400"); // 1 day
+  res.send(buf);
+});
+
+app.post("/kitten-image", async (req, res) => {
   try {
     const prompt = buildPrompt();
-    const image_url = await generateImageURL(prompt);
-    if (!image_url) return res.status(502).json({ error: "no_image_returned" });
+    const b64 = await generateImageB64(prompt);
+    if (!b64) return res.status(502).json({ error: "no_image_returned" });
+
+    const buf = Buffer.from(b64, "base64");
+    const id = putImage(buf);
+    const baseUrl = process.env.PUBLIC_BASE_URL || `https://${req.get("host")}`;
+    const image_url = `${baseUrl}/img/${id}`;
+
     res.json({ image_url });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "server_error" });
   }
 });
-
 
 
 const PORT = process.env.PORT || 8080;
