@@ -90,11 +90,24 @@ app.get("/img/:id", (req, res) => {
 // --- auth: require Bearer token on POST /kitten-image ---
 const REQUIRED_TOKEN = process.env.ACTION_API_KEY || "";
 function requireKey(req, res, next) {
-  if (!REQUIRED_TOKEN) return res.status(500).json({ error: "server_misconfigured" });
-  const hdr = req.get("Authorization") || req.get("authorization") || "";
-  if (!hdr.startsWith("Bearer ")) return res.status(401).json({ error: "missing_auth" });
+  if (!REQUIRED_TOKEN) {
+    console.log("auth: server misconfigured (no ACTION_API_KEY)");
+    return res.status(500).json({ error: "server_misconfigured" });
+  }
+  const hdr = req.get("authorization") || req.get("Authorization") || "";
+  if (!hdr) {
+    console.log("auth: missing Authorization header");
+    return res.status(401).json({ error: "missing_auth" });
+  }
+  if (!hdr.startsWith("Bearer ")) {
+    console.log("auth: bad scheme ->", hdr.slice(0, 20));
+    return res.status(401).json({ error: "bad_scheme" });
+  }
   const token = hdr.slice(7).trim();
-  if (token !== REQUIRED_TOKEN) return res.status(403).json({ error: "invalid_token" });
+  if (token !== REQUIRED_TOKEN) {
+    console.log("auth: invalid token len=", token.length);
+    return res.status(403).json({ error: "invalid_token" });
+  }
   next();
 }
 
