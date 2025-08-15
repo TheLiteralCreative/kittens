@@ -87,7 +87,18 @@ app.get("/img/:id", (req, res) => {
   res.send(buf);
 });
 
-app.post("/kitten-image", async (req, res) => {
+// --- auth: require Bearer token on POST /kitten-image ---
+const REQUIRED_TOKEN = process.env.ACTION_API_KEY || "";
+function requireKey(req, res, next) {
+  if (!REQUIRED_TOKEN) return res.status(500).json({ error: "server_misconfigured" });
+  const hdr = req.get("Authorization") || req.get("authorization") || "";
+  if (!hdr.startsWith("Bearer ")) return res.status(401).json({ error: "missing_auth" });
+  const token = hdr.slice(7).trim();
+  if (token !== REQUIRED_TOKEN) return res.status(403).json({ error: "invalid_token" });
+  next();
+}
+
+app.post("/kitten-image", requireKey, async (req, res) => {
   try {
     const prompt = buildPrompt();
     const b64 = await generateImageB64(prompt);
