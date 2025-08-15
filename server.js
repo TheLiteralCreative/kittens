@@ -34,7 +34,7 @@ const buildPrompt = () =>
 app.get("/", (_req, res)=> res.send("Kittens-Boots-Bass Action OK"));
 
 async function generateImageB64(prompt) {
-  const models = ["gpt-image-1", "dall-e-3"];
+  const models = ["dall-e-3"];
   for (const model of models) {
     try {
       const resp = await openai.images.generate({
