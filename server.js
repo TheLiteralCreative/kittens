@@ -22,12 +22,16 @@ const LIGHT   = ["warm key + soft rim","colored gels","high-key studio","rim-lit
 const CAMERA  = ["low-angle hero","eye-level medium","fisheye close","wide full-body","Dutch tilt","50mm portrait","20mm wide","85mm bokeh"];
 const ACTION  = ["mid-strum","plucking","slap bass","tuning","sound-check stance","jumping mid-riff","sitting on amp"];
 
-const NEGATIVE = "no text, no letters, no numbers, no logos, no watermarks, no captions, no signage, no UI, no dogs, no foxes, no rabbits, no adult big cats, no six-string electric guitar, no violin, no cello";
+const NEGATIVE =
+  "no text, no letters, no numbers, no logos, no watermarks, no captions, no signage, no UI, " +
+  "no dogs, no foxes, no rabbits, no adult big cats, no six-string electric guitar, no violin, no cello, " +
+  "no empty boots, no boots off the kitten, no boots on the floor, no boots sitting on amp, no bare paws";
 
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 const buildPrompt = () =>
-  `A ${pick(STYLE)} image of a ${pick(KITTEN)} kitten wearing ${pick(BOOTS)}, ` +
-  `playing a ${pick(BASS)} bass guitar in a ${pick(SETTING)}. ` +
+  `A ${pick(STYLE)} image of a ${pick(KITTEN)} kitten wearing ${pick(BOOTS)} ` +
+  `on its paws (boots fitted and being worn), playing a ${pick(BASS)} bass guitar in a ${pick(SETTING)}. ` +
+  `Full-body framing so both boots on the kitten's paws are clearly visible. ` +
   `Lighting: ${pick(LIGHT)}. Camera: ${pick(CAMERA)}. Action: ${pick(ACTION)}. ` +
   `High detail, pleasing composition.\nNegative prompt: ${NEGATIVE}`;
 
