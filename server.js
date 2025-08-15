@@ -41,14 +41,25 @@ async function generateImageB64(prompt) {
         model,
         prompt,
         n: 1,
-        size: "512x512",
-        response_format: "b64_json"
+        size: "1024x1024"   // valid for both models
+        // no response_format here; SDK returns b64_json for gpt-image-1
       });
-      const b64 = resp?.data?.[0]?.b64_json;
+
+      // Prefer base64 if present (gpt-image-1)
+      let b64 = resp?.data?.[0]?.b64_json;
+
+      // If only a URL is returned (common with dall-e-3), fetch and convert
+      if (!b64 && resp?.data?.[0]?.url) {
+        const imgRes = await fetch(resp.data[0].url);
+        const buf = Buffer.from(await imgRes.arrayBuffer());
+        b64 = buf.toString("base64");
+      }
+
       if (b64) return b64;
-      console.error("No b64 from", model, JSON.stringify(resp));
+      console.error("No image payload from", model, JSON.stringify(resp));
     } catch (err) {
       console.error("Image gen failed on", model, err?.response?.data || err?.message || err);
+      // try next model
     }
   }
   return null;
