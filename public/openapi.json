@@ -1,12 +1,27 @@
+# from your repo root
+cat > public/openapi.json <<'EOF'
 {
   "openapi": "3.1.0",
   "info": {
     "title": "Kittens-Boots-Bass",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Always returns a kitten wearing boots playing a bass guitar."
   },
   "servers": [
     { "url": "https://www.kittenswearingbootsplayingbassguitars.com" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ActionAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Use format: Bearer <ACTION_API_KEY>"
+      }
+    }
+  },
+  "security": [
+    { "ActionAuth": [] }
   ],
   "paths": {
     "/kitten-image": {
@@ -32,7 +47,10 @@
                 }
               }
             }
-          }
+          },
+          "401": { "description": "Missing or bad Authorization header" },
+          "403": { "description": "Invalid token" },
+          "500": { "description": "Server misconfigured or error" }
         }
       }
     }
