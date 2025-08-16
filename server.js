@@ -1,9 +1,9 @@
-// CommonJS style (matches most Render Node setups)
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const { OpenAI } = require("openai");
-const { randomUUID } = require("crypto");
+// ESM-compatible header (since package.json has "type": "module")
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import { OpenAI } from "openai";
+import { randomUUID } from "node:crypto";
 
 const app = express();
 app.set("trust proxy", true); // so req.protocol/host work behind Render
