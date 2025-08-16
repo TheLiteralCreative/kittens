@@ -1,0 +1,40 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Kittens-Boots-Bass",
+    "version": "1.0.1",
+    "description": "Always returns a kitten wearing boots playing a bass guitar."
+  },
+  "servers": [
+    { "url": "https://www.kittenswearingbootsplayingbassguitars.com" }
+  ],
+  "paths": {
+    "/kitten-image": {
+      "post": {
+        "operationId": "getKittenImage",
+        "summary": "Returns a kitten wearing boots playing a bass guitar.",
+        "x-openai-isConsequential": false,
+        "responses": {
+          "200": {
+            "description": "Image URL payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["image_url"],
+                  "properties": {
+                    "image_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "Public URL of the generated image"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
