@@ -1,8 +1,9 @@
+cat > public/openapi.json <<'EOF'
 {
   "openapi": "3.1.0",
   "info": {
     "title": "Kittens-Boots-Bass",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Always returns a kitten wearing boots playing a bass guitar."
   },
   "x-openai-isConsequential": false,
@@ -10,6 +11,7 @@
     { "url": "https://www.kittenswearingbootsplayingbassguitars.com" }
   ],
   "components": {
+    "schemas": {},
     "securitySchemes": {
       "ActionAuth": {
         "type": "apiKey",
@@ -25,9 +27,21 @@
   "paths": {
     "/kitten-image": {
       "post": {
-       "operationId": "getKittenImage",
+        "operationId": "getKittenImage",
         "summary": "Returns a kitten wearing boots playing a bass guitar.",
         "x-openai-isConsequential": false,
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Image URL payload",
@@ -55,3 +69,4 @@
     }
   }
 }
+EOF
