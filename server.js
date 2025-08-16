@@ -1,12 +1,15 @@
-import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
-import { OpenAI } from "openai";
-import { randomUUID } from "crypto";
+// CommonJS style (matches most Render Node setups)
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const { OpenAI } = require("openai");
+const { randomUUID } = require("crypto");
 
 const app = express();
 app.set("trust proxy", true); // so req.protocol/host work behind Render
 
+app.use(express.json());
+app.use(express.static("public")); // serves /openapi.json
 app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
 
