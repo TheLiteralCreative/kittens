@@ -1,4 +1,4 @@
-cat > public/openapi.json <<'EOF'
+
 {
   "openapi": "3.1.0",
   "info": {
@@ -69,4 +69,3 @@ cat > public/openapi.json <<'EOF'
     }
   }
 }
-EOF
