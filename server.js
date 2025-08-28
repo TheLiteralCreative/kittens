@@ -125,10 +125,8 @@ app.post("/kitten-image", requireKey, async (req, res) => {
     const baseUrl = process.env.PUBLIC_BASE_URL || `https://${req.get("host")}`;
     const image_url = `${baseUrl}/img/${id}`;
 
-    res.json({ image_url });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "server_error" });
+    res.type("text/markdown").send(`![](${image_url})`);
+
   }
 });
 
