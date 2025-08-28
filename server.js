@@ -126,6 +126,12 @@ app.post("/kitten-image", requireKey, async (req, res) => {
     const image_url = `${baseUrl}/img/${id}`;
 
     res.type("text/markdown").send(`![](${image_url})`);
+  } catch (err) {
+    console.error("KBB error", err);
+    res.status(500).json({ error: "server_error" });
+  }
+});
+
 
   }
 });
