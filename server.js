@@ -125,6 +125,8 @@ app.post("/kitten-image", requireKey, async (req, res) => {
     const baseUrl = process.env.PUBLIC_BASE_URL || `https://${req.get("host")}`;
     const image_url = `${baseUrl}/img/${id}`;
 
+    console.log("KBB /kitten-image OK", { image_url });
+
     res.type("text/markdown").send(`![](${image_url})`);
   } catch (err) {
     console.error("KBB error", err);
