@@ -1,7 +1,7 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: Kittens-Boots-Bass
-  version: 1.0.5
+  version: 2.0.1
   description: Always returns a kitten wearing boots playing a bass guitar.
 x-openai-isConsequential: false
 servers:
@@ -20,7 +20,7 @@ paths:
   /kitten-image:
     post:
       operationId: getKittenImage
-      summary: Returns a URL to a kitten wearing boots playing a bass guitar.
+      summary: Returns a Markdown image of a kitten wearing boots playing a bass guitar.
       x-openai-isConsequential: false
       requestBody:
         required: false
@@ -32,17 +32,11 @@ paths:
               additionalProperties: false
       responses:
         '200':
-          description: Image URL payload
+          description: Markdown image response
           content:
-            application/json:
+            text/markdown:
               schema:
-                type: object
-                required: [image_url]
-                properties:
-                  image_url:
-                    type: string
-                    format: uri
-                    description: Public URL of the generated image
+                type: string
         '401': { description: Missing or bad Authorization header }
         '403': { description: Invalid token }
         '500': { description: Server misconfigured or error }
